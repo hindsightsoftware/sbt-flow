@@ -3,7 +3,7 @@ import com.typesafe.sbt.SbtGit._
 
 sbtPlugin := true
 
-name := "sbt-flowtype"
+name := "sbt-flow"
 
 organization := "com.hindsightsoftware.sbt"
 
