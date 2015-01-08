@@ -8,8 +8,10 @@ source for JavaScript files.
 Setup
 -----
 
-This plugin does not install `flow` and requires the application to be installed and available in the `PATH` environment
-variable. To use this plugin use the addSbtPlugin command within your project's `plugins.sbt` file:
+This plugin does not install `flow` and requires the application to be installed and available in your `PATH`,
+see [Installing Flow](http://flowtype.org/docs/getting-started.html).
+
+To use this plugin use the addSbtPlugin command within your project's `plugins.sbt` file:
 
     resolvers += Resolver.url("hindsightsoftware-sbt-plugin-releases",
           url("http://dl.bintray.com/hindsightsoftware/sbt-plugins"))(
@@ -24,4 +26,4 @@ Your project's build file also needs to enable sbt-web plugins. For example with
 
 
 
-&copy; [Hindsight Software ltd](http://hindsightsoftware.com), 2014
+&copy; [Hindsight Software ltd](http://hindsightsoftware.com), 2015
