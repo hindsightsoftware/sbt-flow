@@ -7,11 +7,12 @@ import sbt.Keys._
 
 object Import {
 
-  val flow = TaskKey[Unit]("flow-check", "Performs type checking on JavaScript code using Flowtype.")
+  val flow = TaskKey[Unit]("flow", "Performs type checking on JavaScript code using Flow.")
 
   object FlowKeys {
     val allFiles = SettingKey[Boolean]("allFiles", "Typecheck all files, not just files with the @flow annotation")
     val weakInference = SettingKey[Boolean]("weakInference", "Typecheck with weak inference, assuming dynamic types by default")
+    val interfacePaths = SettingKey[Seq[String]]("interfacePaths", "Specify one or more library paths for interfaces and declarations")
   }
 
 }
@@ -32,6 +33,7 @@ object SbtFlow extends AutoPlugin {
     sourceDirectory in flow := (sourceDirectory in Assets).value,
     allFiles := false,
     weakInference := false,
+    interfacePaths := Seq.empty,
     flow := checkFiles.value
   )
 
@@ -42,7 +44,9 @@ object SbtFlow extends AutoPlugin {
       val flags = Map("--all" -> allFiles.value,
                       "--weak" -> weakInference.value).filter( e => e._2 ).keys
 
-      Process(Seq("flow", "check", "--quiet") ++ flags ++ Seq(sourceDir.getAbsolutePath), None) ! s.log match {
+      val args = Map("--lib" -> interfacePaths.value).filter( e => ! e._2.isEmpty).flatMap( v => Seq( v._1, v._2 mkString(",")))
+
+      Process(Seq("flow", "check", "--quiet") ++ flags ++ args ++ Seq(sourceDir.getAbsolutePath), None) ! s.log match {
         case 0 => s.log.success("Flow check complete")
         case x => s.log.error("Flow check failed")
       }
