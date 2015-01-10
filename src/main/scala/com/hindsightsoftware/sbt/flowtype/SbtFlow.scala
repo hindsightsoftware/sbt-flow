@@ -7,7 +7,8 @@ import sbt.Keys._
 
 object Import {
 
-  val flow = TaskKey[Unit]("flow", "Performs type checking on JavaScript code using Flow.")
+  val flow = TaskKey[String]("flow", "Performs type checking on JavaScript code using Flow.")
+  val check = TaskKey[Unit]("check", "Performs type checking on JavaScript code using Flow.")
 
   object FlowKeys {
     val allFiles = SettingKey[Boolean]("allFiles", "Typecheck all files, not just files with the @flow annotation")
@@ -34,7 +35,7 @@ object SbtFlow extends AutoPlugin {
     allFiles := false,
     weakInference := false,
     interfacePaths := Seq.empty,
-    flow := checkFiles.value
+    check in flow := checkFiles.value
   )
 
   def checkFiles: Def.Initialize[Task[Unit]] = Def.task {

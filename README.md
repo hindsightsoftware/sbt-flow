@@ -1,12 +1,11 @@
-sbt-flow
-=======
+# sbt-flow
 
 An SBT plugin for performing static type checking of JavaScript using [Flow](http://flowtype.org/). Implemented as a
-[sbt-web](https://github.com/sbt/sbt-web) plugin and it is aware of the asset pipeline and uses this as the default
+[sbt-web](https://github.com/sbt/sbt-web) plugin and is aware of the asset pipeline and uses this as the default
 source for JavaScript files.
 
-Setup
------
+## Setup
+
 
 This plugin does not install `flow` and requires the application to be installed and available in your `PATH`,
 see [Installing Flow](http://flowtype.org/docs/getting-started.html).
@@ -24,6 +23,41 @@ Your project's build file also needs to enable sbt-web plugins. For example with
 
     lazy val root = (project in file(".")).enablePlugins(SbtWeb)
 
+## Usage
+
+Typecheck JavaScript files using Flow without starting the Flow server. Equivalent to `$ flow check`
+
+```
+> flow::check
+```
+
+### Options
+
+The Flow can be configured in `build.sbt` with these properties
+
+```
+FlowKeys.allFiles := true
+```
+
+#### FlowKeys.allFiles
+Typecheck all files, not just files containing the `@flow` annotation.
+
+Type: `Boolean`
+Default: `false`
+
+#### FlowKeys.weakInference
+
+Typecheck with weak inference, assuming dynamic types by default
+
+Type: `Boolean`
+Default: `false`
+
+#### FlowKeys.interfacePaths
+Specify one or more library paths for interfaces and declaration
+
+Type: `Seq[String]`
+Default: `Seq.empty`
 
 
-&copy; [Hindsight Software ltd](http://hindsightsoftware.com), 2015
+
+&copy; [Hindsight Software Ltd](http://hindsightsoftware.com), 2015
