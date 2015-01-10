@@ -38,17 +38,17 @@ object SbtFlow extends AutoPlugin {
   )
 
   def checkFiles: Def.Initialize[Task[Unit]] = Def.task {
-      val sourceDir = (sourceDirectory in flow).value
-      val s: TaskStreams = streams.value
+    val sourceDir = (sourceDirectory in flow).value
+    val s: TaskStreams = streams.value
 
-      val flags = Map("--all" -> allFiles.value,
-                      "--weak" -> weakInference.value).filter( e => e._2 ).keys
+    val flags = Map("--all" -> allFiles.value,
+                    "--weak" -> weakInference.value).filter( e => e._2 ).keys
 
-      val args = Map("--lib" -> interfacePaths.value).filter( e => ! e._2.isEmpty).flatMap( v => Seq( v._1, v._2 mkString(",")))
+    val args = Map("--lib" -> interfacePaths.value).filter( e => ! e._2.isEmpty).flatMap( v => Seq( v._1, v._2 mkString(",")))
 
-      Process(Seq("flow", "check", "--quiet") ++ flags ++ args ++ Seq(sourceDir.getAbsolutePath), None) ! s.log match {
-        case 0 => s.log.success("Flow check complete")
-        case x => s.log.error("Flow check failed")
-      }
+    Process(Seq("flow", "check", "--quiet") ++ flags ++ args ++ Seq(sourceDir.getAbsolutePath), None) ! s.log match {
+      case 0 => s.log.success("Flow check complete")
+      case x => s.log.error("Flow check failed")
+    }
   }
 }
