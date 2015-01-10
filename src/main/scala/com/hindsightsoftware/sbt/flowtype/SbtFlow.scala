@@ -9,6 +9,7 @@ object Import {
 
   val flow = TaskKey[String]("flow", "Performs type checking on JavaScript code using Flow.")
   val check = TaskKey[Unit]("check", "Performs type checking on JavaScript code using Flow.")
+  val init = TaskKey[Unit]("init", "Initializes the 'sourceDirectory' to be used as a flow root directory")
 
   object FlowKeys {
     val allFiles = SettingKey[Boolean]("allFiles", "Typecheck all files, not just files with the @flow annotation")
@@ -35,8 +36,14 @@ object SbtFlow extends AutoPlugin {
     allFiles := false,
     weakInference := false,
     interfacePaths := Seq.empty,
-    check in flow := checkFiles.value
+    check in flow := checkFiles.value,
+    init in flow := initFlow.value
   )
+
+  def initFlow: Def.Initialize[Task[Unit]] = Def.task {
+    val sourceDir = (sourceDirectory in flow).value
+    Process(Seq("flow", "init", sourceDir.getAbsolutePath)) ! streams.value.log
+  }
 
   def checkFiles: Def.Initialize[Task[Unit]] = Def.task {
     val sourceDir = (sourceDirectory in flow).value

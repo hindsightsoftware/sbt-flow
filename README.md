@@ -25,13 +25,24 @@ Your project's build file also needs to enable sbt-web plugins. For example with
 
 ## Usage
 
+### init
+To set up a new project using Flow, all you need to do is initialize your root JavaScript folder tell Flow to start
+typechecking files within your project. `> flow::init` will initializes the `sourceDirectory in Assets` to be used as
+the root directory.
+
+```
+> flow::init
+```
+
+### Check
+
 Typecheck JavaScript files using Flow without starting the Flow server. Equivalent to `$ flow check`
 
 ```
 > flow::check
 ```
 
-### Options
+## Options
 
 The Flow can be configured in `build.sbt` with these properties
 
