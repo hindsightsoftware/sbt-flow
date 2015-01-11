@@ -7,9 +7,12 @@ import sbt.Keys._
 
 object Import {
 
-  val flow = TaskKey[String]("flow", "Performs type checking on JavaScript code using Flow.")
+  val flow = TaskKey[Unit]("flow", "Performs type checking on JavaScript code using Flow.")
   val check = TaskKey[Unit]("check", "Performs type checking on JavaScript code using Flow.")
   val init = TaskKey[Unit]("init", "Initializes the 'sourceDirectory' to be used as a flow root directory")
+  val start = TaskKey[Unit]("start", "Start the Flow server for incremental typechecking")
+  val status = TaskKey[Unit]("status", "Typecheck recent changes made to JavaScript files")
+  val stop = TaskKey[Unit]("stop", "Stop the flow server")
 
   object FlowKeys {
     val allFiles = SettingKey[Boolean]("allFiles", "Typecheck all files, not just files with the @flow annotation")
@@ -36,27 +39,33 @@ object SbtFlow extends AutoPlugin {
     allFiles := false,
     weakInference := false,
     interfacePaths := Seq.empty,
-    check in flow := checkFiles.value,
-    init in flow := initFlow.value
+    check in flow := flowCommand("check").value,
+    init in flow := flowSimpleCommand("status").value,
+    start in flow := flowCommand("start").value,
+    status in flow := flowSimpleCommand("status").value,
+    stop in flow := flowSimpleCommand("stop").value,
+    flow := status in flow
   )
 
-  def initFlow: Def.Initialize[Task[Unit]] = Def.task {
-    val sourceDir = (sourceDirectory in flow).value
-    Process(Seq("flow", "init", sourceDir.getAbsolutePath)) ! streams.value.log
-  }
-
-  def checkFiles: Def.Initialize[Task[Unit]] = Def.task {
+  def flowCommand(subCommand: String, args: Seq[String] = Seq.empty): Def.Initialize[Task[Unit]] = Def.task {
     val sourceDir = (sourceDirectory in flow).value
     val s: TaskStreams = streams.value
 
-    val flags = Map("--all" -> allFiles.value,
-                    "--weak" -> weakInference.value).filter( e => e._2 ).keys
+    val flags = Map("--all" -> (allFiles in flow).value,
+                    "--weak" -> (weakInference in flow).value).filter( e => e._2 ).keys
+    val paths = Map("--lib" -> (interfacePaths in flow).value).filter( e => ! e._2.isEmpty).flatMap( v => Seq( v._1, v._2 mkString(",")))
 
-    val args = Map("--lib" -> interfacePaths.value).filter( e => ! e._2.isEmpty).flatMap( v => Seq( v._1, v._2 mkString(",")))
+    val command: Seq[String] = Seq("flow", subCommand) ++ args ++ flags ++ paths ++ Seq(sourceDir.getAbsolutePath)
+    s.log.debug(command mkString(" "))
+    Process(command, None) ! s.log
+  }
 
-    Process(Seq("flow", "check", "--quiet") ++ flags ++ args ++ Seq(sourceDir.getAbsolutePath), None) ! s.log match {
-      case 0 => s.log.success("Flow check complete")
-      case x => s.log.error("Flow check failed")
-    }
+  def flowSimpleCommand(subCommand: String, args: Seq[String] = Seq.empty): Def.Initialize[Task[Unit]] = Def.task {
+    val sourceDir = (sourceDirectory in flow).value
+    val s: TaskStreams = streams.value
+
+    val command: Seq[String] = Seq("flow", subCommand) ++ args ++ Seq(sourceDir.getAbsolutePath)
+    s.log.debug(command mkString(" "))
+    Process(command, None) ! s.log
   }
 }
