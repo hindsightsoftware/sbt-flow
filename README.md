@@ -1,4 +1,4 @@
-# sbt-flow
+# sbt-flow [![Circle CI](https://circleci.com/gh/hindsightsoftware/sbt-flow/tree/master.svg?style=svg)](https://circleci.com/gh/hindsightsoftware/sbt-flow/tree/master)  [ ![Download](https://api.bintray.com/packages/hindsightsoftware/sbt-plugins/sbt-flow/images/download.svg) ](https://bintray.com/hindsightsoftware/sbt-plugins/sbt-flow/_latestVersion)
 
 An SBT plugin for performing static type checking of JavaScript using [Flow](http://flowtype.org/). Implemented as a
 [sbt-web](https://github.com/sbt/sbt-web) plugin and is aware of the asset pipeline and uses this as the default
